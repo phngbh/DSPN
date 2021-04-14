@@ -42,25 +42,25 @@ fi
 echo Finish checking | sed G
 # echo Starting input transformation... | sed G | sed G
 
-###TRANSFORMING INPUT AND MAKING PLINK BINARY FILE######
-# for chr in {9..22}
-# do
+##TRANSFORMING INPUT AND MAKING PLINK BINARY FILE######
+for chr in {9..22}
+do
 
-# 	echo "Extracting chromosome ${chr}" | sed G 
-# 	gunzip -c $DDIR/KORAS4F4_HRC_N3788_chr${chr}_notmonomorph.vcf.gz > ./vcf/imputed_chr$chr.vcf 
+	echo "Extracting chromosome ${chr}" | sed G 
+	gunzip -c $DDIR/KORAS4F4_HRC_N3788_chr${chr}_notmonomorph.vcf.gz > ./vcf/imputed_chr$chr.vcf 
 
-#     echo "Making plink binary fileset for chromosome ${chr}" | sed G
-# 	#Make plink binary files
-# 	./plink --vcf ./vcf/imputed_chr${chr}.vcf \
-# 		  --silent \
-# 		  --no-parents \
-# 		  --no-sex \
-# 		  --no-pheno \
-# 		  --make-bed --out ./binary/chr"$chr"
+    echo "Making plink binary fileset for chromosome ${chr}" | sed G
+	#Make plink binary files
+	./plink --vcf ./vcf/imputed_chr${chr}.vcf \
+		  --silent \
+		  --no-parents \
+		  --no-sex \
+		  --no-pheno \
+		  --make-bed --out ./binary/chr"$chr"
   
-#   echo "Done proccessing chromosome ${chr}" | sed G | sed G
+  echo "Done proccessing chromosome ${chr}" | sed G | sed G
   
-# done 
+done 
 
 ###QUALITY CONTROL##########
 
