@@ -1,0 +1,34 @@
+#!/usr/bin/env Rscript
+
+gen_ids = read.csv("/1.Processing/Genomics/genomics_processed.fam", header = F, sep = "\t")$V1
+clin <- read_sas("/data/gesamt_k05720g_v2007.sas7bdat", NULL)
+clin = filter(clin, !utdm100y15 %in% c(6,7,8)) %>% droplevels()
+sampleIDs = clin %>% dplyr::select(lg_dnaAxiom_s4f4, 
+                           un_expr_f4ogtt,
+                           un_protSoma_f4,
+                           un_metabMetabolon_f4,
+                           un_meth450k_f4,
+                           zz_nr)
+sampleIDs$Clinical = clin$zz_nr
+colnames(sampleIDs) = c("Genomics", "Transcriptomics", "Proteomics",
+                        "Metabolomics", "Methylomics", "Olink", "Clinical")
+neuro = clin[,c(grep("un12",colnames(clin)),grep("un13",colnames(clin)))] %>%
+  cbind(dplyr::select(clin, "un14","un15","un17","un18","un19","un20","utmnsi","u3tmnsi"))
+rownames(neuro) = clin$zz_nr
+mnsi = neuro %>% 
+  rownames_to_column("id") %>%
+  dplyr::select(id, utmnsi, u3tmnsi) %>% 
+  filter(!is.na(utmnsi)) %>% 
+  mutate(utmnsi2 = ifelse(utmnsi <= 2, 0, 1), 
+         utmnsi3 = ifelse(utmnsi <= 3, 0, 1),
+         u3tmnsi2 = ifelse(is.na(u3tmnsi), NA, ifelse(u3tmnsi <= 2, 0, 1)),
+         u3tmnsi3 = ifelse(is.na(u3tmnsi), NA, ifelse(u3tmnsi <= 3, 0, 1))) %>%
+  mutate(inc2 = ifelse(is.na(u3tmnsi2) | utmnsi2 == 1, NA, ifelse(utmnsi2 == 0 & u3tmnsi2 == 0, 0, 1)),
+         inc3 = ifelse(is.na(u3tmnsi3) | utmnsi3 == 1, NA, ifelse(utmnsi3 == 0 & u3tmnsi3 == 0, 0, 1)),
+         prog = u3tmnsi - utmnsi) %>%
+  remove_rownames() %>%
+  column_to_rownames("id") %>%
+  dplyr::select(-c(utmnsi,u3tmnsi, u3tmnsi2, u3tmnsi3))
+
+write.table(data.frame(FID = gen_ids, IID = gen_ids, inc3 = mnsi$inc3[as.character(sampleIDs$Clinical)[match(gen_ids, as.character(sampleIDs$Genomics))]]),
+	file = "inc3.txt", sep = "\t", quote = F, rownames = F)
