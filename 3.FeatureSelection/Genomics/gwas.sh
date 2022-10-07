@@ -25,7 +25,7 @@ echo Doing GWAS and make BED files of the results
 for i in {1..100};
 do 
 
-	./plink --bfile /1.Processing/Genomics/genomics --extract snps_2_keep.txt --keep ./samples_list/samples_${i}.txt --make-bed --out ./scratch/tmp
+	./plink --bfile /1.Processing/Genomics/genomics_processed --extract snps_2_keep.txt --keep ./samples_list/samples_${i}.txt --make-bed --out ./scratch/tmp
 	./plink --bfile ./scratch/tmp \
 					--logistic \
 					--pheno inc3.txt \
@@ -35,7 +35,7 @@ do
 	#Rscript make_bed.R ./gwas/gwas.inc3.assoc.logistic inc3
 done
 
-./plink --bfile /1.Processing/Genomics/genomics --extract snps_2_keep.txt --keep ./samples_list/samples_all.txt --make-bed --out ./scratch/tmp
+./plink --bfile /1.Processing/Genomics/genomics_processed --extract snps_2_keep.txt --keep ./samples_list/samples_all.txt --make-bed --out ./scratch/tmp
 ./plink --bfile ./scratch/tmp \
 					--logistic \
 					--pheno inc3.txt \

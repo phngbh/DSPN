@@ -1,0 +1,7 @@
+How to do feature selection for genomics data:
+
+1. Run gwas.sh
+2. Run magma.sh
+3. Run get_gene_stat.sh
+3. Run GSEA.R
+4. Run get_train_set.sh
